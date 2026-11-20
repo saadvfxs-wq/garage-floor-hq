@@ -25,6 +25,8 @@ start-server.bat
 
 Then open `http://localhost:8080/garage-floor-hq/index.html`.
 
-## Temporary public preview
+## Live site
 
-The live preview is a Cloudflare quick tunnel pointing at a local Node static server. It stays online only while those background processes run, and the URL changes if the tunnel is restarted.
+https://saadvfxs-wq.github.io/garage-floor-hq/
+
+Hosted with GitHub Pages from the `main` branch.
