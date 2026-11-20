@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0f12">
+  <meta name="description" content="Garage Floor HQ connects homeowners with pre-vetted garage floor contractors. Book a free estimate in under a minute.">
+  <title>Garage Floor HQ | Book a Free Estimate</title>
+  <link rel="icon" href="assets/profile.jpg" type="image/jpeg">
+  <style>
+    /* ---------------------------------------------------------------
+       Garage Floor HQ — single page booking site
+       All imagery is taken from the real @garagefloorhq Instagram feed.
+       --------------------------------------------------------------- */
+    :root {
+      --ink: #0d0f12;
+      --ink-2: #15191f;
+      --ink-3: #1d222a;
+      --line: rgba(255,255,255,.11);
+      --paper: #f5f3ef;
+      --paper-2: #eae6df;
+      --muted: #7f8792;
+      --white: #ffffff;
+      --accent: #ff7a1a;
+      --accent-soft: #ffb35c;
+      --green: #3ddc97;
+      --radius: 20px;
+      --shadow: 0 24px 60px rgba(9,12,16,.16);
+      --compact-h: 0px;
+      --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding-top: var(--compact-h);
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .skip {
+      position: fixed; left: 12px; top: -100px; z-index: 2000;
+      background: var(--white); color: var(--ink); padding: 12px 18px; border-radius: 10px;
+    }
+    .skip:focus { top: 12px; }
+    .wrap { width: min(1240px, calc(100% - 48px)); margin-inline: auto; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent);
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 2px; background: currentColor; }
+    .section { padding: clamp(70px, 9vw, 120px) 0; }
+    .section-head { max-width: 720px; margin-bottom: 44px; }
+    .section-head h2 {
+      margin: 14px 0 14px;
+      font-size: clamp(32px, 4.4vw, 52px); line-height: 1.05; letter-spacing: -.035em;
+    }
+    .section-head p { margin: 0; color: #5d646e; font-size: 17px; line-height: 1.65; }
+    .dark { background: var(--ink); color: var(--white); }
+
+    /* ------------------------- FIXED BOOKING DOCK ------------------- */
+    .booking-dock {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(13, 15, 18, .97);
+      border-bottom: 3px solid var(--accent);
+      box-shadow: 0 12px 40px rgba(0,0,0,.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .dock-inner {
+      width: min(1360px, calc(100% - 32px));
+      margin-inline: auto;
+      min-height: calc(var(--compact-h) - 3px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dock-brand { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding-right: 14px; border-right: 1px solid var(--line); }
+    .dock-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+    .dock-brand b { display: block; font-size: 12px; letter-spacing: .02em; line-height: 1.2; }
+    .dock-brand small { display: block; color: var(--accent-soft); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-top: 3px; }
+    .dock-fields { display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; }
+    .dock-fields > * { min-width: 0; }
+    .dock-field {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(255,255,255,.055);
+      color: var(--white);
+      padding: 0 13px;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+    }
+    .dock-field::placeholder { color: #9098a3; font-weight: 500; }
+    .dock-field:focus { border-color: var(--accent); background: rgba(255,122,26,.08); }
+    select.dock-field { appearance: none; padding-right: 32px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+    select.dock-field option { background: var(--ink-2); color: var(--white); }
+    #bk-service { flex: 1.25 1 170px; }
+    #bk-zip { flex: .8 1 120px; }
+    .dock-more {
+      flex: 0 0 auto;
+      background: transparent;
+      border: 0;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 6px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: var(--accent);
+    }
+    .btn-accent {
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 11px;
+      background: var(--accent);
+      color: #17110a;
+      height: 44px;
+      padding: 0 20px;
+      font-weight: 850;
+      font-size: 13px;
+      letter-spacing: .01em;
+      white-space: nowrap;
+      transition: transform .16s ease, background .16s ease;
+    }
+    .btn-accent:hover { background: var(--accent-soft); transform: translateY(-1px); }
+    .btn-accent:active { transform: translateY(0); }
+
+    /* Expanded part of the fixed form: sits under the compact bar, never pushes the page */
+    .dock-extra {
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: #11151a;
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 26px 50px rgba(0,0,0,.42);
+      padding: 22px 16px 26px;
+      max-height: calc(100vh - var(--compact-h) - 24px);
+      max-height: calc(100dvh - var(--compact-h) - 24px);
+      overflow-y: auto;
+      display: none;
+    }
+    .booking-dock.expanded .dock-extra { display: block; }
+    .extra-inner { width: min(1360px, calc(100% - 32px)); margin-inline: auto; }
+    .extra-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .extra-top h2 { margin: 0; font-size: 17px; letter-spacing: -.01em; }
+    .extra-top p { margin: 5px 0 0; color: #9aa2ad; font-size: 12px; }
+    .extra-close { background: transparent; border: 1px solid var(--line); color: var(--white); border-radius: 9px; padding: 8px 12px; font-size: 12px; font-weight: 700; }
+    .field-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #a7aeb8; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.05);
+      color: var(--white);
+      padding: 12px 13px;
+      font-size: 14px;
+      outline: none;
+    }
+    .field textarea { min-height: 82px; resize: vertical; }
+    .field input::placeholder, .field textarea::placeholder { color: #757e89; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); background: rgba(255,122,26,.07); }
+    .field select option { background: var(--ink-2); }
+    .extra-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
+    .extra-foot p { margin: 0; color: #8e96a1; font-size: 12px; max-width: 620px; line-height: 1.6; }
+    .btn-ghost { border: 1px solid var(--line); background: transparent; color: var(--white); border-radius: 10px; padding: 13px 20px; font-size: 13px; font-weight: 750; }
+    .btn-ghost:hover { border-color: var(--accent); }
+
+    /* Success state inside the fixed form */
+    .dock-success {
+      display: none;
+      width: min(1360px, calc(100% - 32px));
+      margin-inline: auto;
+      min-height: calc(var(--compact-h) - 3px);
+      align-items: center;
+      gap: 14px;
+    }
+    .booking-dock.success .dock-inner { display: none; }
+    .booking-dock.success .dock-success { display: flex; }
+    .success-icon { width: 36px; height: 36px; flex: 0 0 auto; border-radius: 50%; background: rgba(61,220,151,.14); color: var(--green); display: grid; place-items: center; font-weight: 900; }
+    .success-copy { flex: 1 1 auto; min-width: 0; }
+    .success-copy b { display: block; font-size: 14px; }
+    .success-copy span { display: block; color: #a8b0ba; font-size: 12px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .success-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+    .success-actions button, .success-actions a {
+      border: 1px solid var(--line); background: transparent; color: var(--white);
+      text-decoration: none; border-radius: 9px; padding: 9px 12px; font-size: 12px; font-weight: 700;
+    }
+    .success-actions .primary { background: var(--accent); border-color: var(--accent); color: #17110a; }
+
+    /* ------------------------------- HEADER ------------------------- */
+    .site-header { border-bottom: 1px solid var(--paper-2); background: rgba(245,243,239,.92); }
+    .header-inner { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--white), 0 0 0 5px var(--accent); }
+    .logo b { display: block; font-size: 17px; letter-spacing: -.025em; line-height: 1.05; }
+    .logo span { display: block; font-size: 11px; color: var(--muted); font-weight: 650; margin-top: 3px; }
+    .nav { display: flex; align-items: center; gap: 28px; }
+    .nav a { text-decoration: none; font-size: 13px; font-weight: 700; color: #4c535c; }
+    .nav a:hover { color: var(--accent); }
+    .nav .nav-cta { background: var(--ink); color: var(--white); padding: 11px 17px; border-radius: 10px; }
+    .nav .nav-cta:hover { background: var(--accent); color: #17110a; }
+
+    /* -------------------------------- HERO ------------------------- */
+    .hero { position: relative; overflow: hidden; background: var(--ink); color: var(--white); }
+    .hero::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(90deg, #000, transparent 78%);
+      -webkit-mask-image: linear-gradient(90deg, #000, transparent 78%);
+    }
+    .hero::after { content: ""; position: absolute; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(255,122,26,.18), transparent 68%); right: -120px; top: -160px; pointer-events: none; }
+    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.03fr .97fr; gap: clamp(32px, 5vw, 72px); align-items: center; padding-block: clamp(56px, 7vw, 96px); }
+    .hero h1 { margin: 18px 0 20px; font-size: clamp(42px, 6.2vw, 78px); line-height: .98; letter-spacing: -.055em; }
+    .hero h1 em { color: var(--accent); font-style: normal; }
+    .hero-lead { margin: 0; max-width: 540px; color: #b9c0c9; font-size: clamp(16px, 1.7vw, 19px); line-height: 1.68; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .btn-primary, .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      border-radius: 12px; padding: 15px 22px; font-size: 14px; font-weight: 800; text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: #17110a; border: 1px solid var(--accent); }
+    .btn-primary:hover { background: var(--accent-soft); }
+    .btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,.24); }
+    .btn-outline:hover { border-color: var(--white); }
+    .hero-trust { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--line); }
+    .hero-trust span { display: inline-flex; align-items: center; gap: 8px; color: #c9ced5; font-size: 12px; font-weight: 650; }
+    .hero-trust span::before { content: "✓"; color: var(--green); font-weight: 900; }
+
+    /* Hero booking card — the full form lives here on desktop */
+    .hero-booking { justify-self: end; width: 100%; max-width: 520px; }
+    .booking-card {
+      background: #171b21;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 36px 80px rgba(0,0,0,.5);
+    }
+    .booking-card-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,122,26,.12), transparent 70%);
+    }
+    .booking-card-logo {
+      width: 44px; height: 44px; flex: 0 0 auto; object-fit: cover;
+      border-radius: 50%; box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--accent);
+    }
+    .booking-card-head-text { flex: 1 1 auto; min-width: 0; }
+    .booking-card-head-text b { display: block; font-size: 15px; }
+    .booking-card-head-text small { display: block; color: var(--accent-soft); font-size: 11px; margin-top: 3px; }
+    .booking-card-badge { flex: 0 0 auto; background: var(--accent); color: #17110a; border-radius: 999px; padding: 6px 10px; font-size: 10px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+    .booking-card-body { padding: 22px; }
+    .booking-card-body h2 { margin: 0 0 6px; font-size: 21px; letter-spacing: -.025em; }
+    .booking-card-body > p { margin: 0 0 20px; color: #aab1bb; font-size: 13px; line-height: 1.55; }
+    .hero-form { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .hero-form .field { gap: 6px; }
+    .hero-form .field label { font-size: 10px; color: #a7aeb8; }
+    .hero-form .field input,
+    .hero-form .field select,
+    .hero-form .field textarea {
+      border: 1px solid var(--line); border-radius: 10px;
+      background: rgba(255,255,255,.055); color: var(--white);
+      padding: 11px 12px; font-size: 13px; outline: none; width: 100%;
+    }
+    .hero-form .field textarea { min-height: 66px; resize: vertical; }
+    .hero-form .field input::placeholder, .hero-form .field textarea::placeholder { color: #757e89; }
+    .hero-form .field input:focus, .hero-form .field select:focus, .hero-form .field textarea:focus { border-color: var(--accent); background: rgba(255,122,26,.07); }
+    .hero-form .field select option { background: var(--ink-2); }
+    .hero-form .btn-accent { grid-column: 1 / -1; width: 100%; height: 48px; font-size: 14px; }
+    .hero-form-note { grid-column: 1 / -1; margin: -3px 0 0; color: #8e96a1; font-size: 11px; line-height: 1.5; text-align: center; }
+    .booking-card-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 13px 22px; border-top: 1px solid var(--line); color: #9aa2ad; font-size: 11px;
+    }
+    .booking-card-foot a { display: inline-flex; align-items: center; gap: 8px; color: var(--white); text-decoration: none; font-weight: 750; }
+    .booking-card-foot a:hover { color: var(--accent-soft); }
+    .booking-card-foot img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+    .hero-success-card { display: none; padding: 30px 22px; text-align: center; }
+    .hero-booking.done .booking-card-body, .hero-booking.done .booking-card-foot { display: none; }
+    .hero-booking.done .hero-success-card { display: block; }
+    .hero-success-card .success-icon { margin: 0 auto 14px; width: 52px; height: 52px; font-size: 22px; }
+    .hero-success-card h3 { margin: 0 0 8px; font-size: 21px; }
+    .hero-success-card p { margin: 0 0 18px; color: #aab1bb; font-size: 13px; line-height: 1.6; }
+    .hero-success-actions { display: grid; gap: 9px; }
+    .hero-success-actions button, .hero-success-actions a { border: 1px solid var(--line); background: transparent; color: var(--white); border-radius: 10px; padding: 12px; font-size: 12px; font-weight: 750; text-decoration: none; }
+    .hero-success-actions .primary { background: var(--accent); border-color: var(--accent); color: #17110a; }
+
+    /* ---------------------------- SERVICE STRIP --------------------- */
+    .stats { background: var(--white); border-bottom: 1px solid var(--paper-2); }
+    .stats-inner { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .stat { padding: 28px 24px; display: flex; align-items: center; gap: 16px; }
+    .stat + .stat { border-left: 1px solid var(--paper-2); }
+    .stat-num { font-size: 34px; font-weight: 850; letter-spacing: -.05em; color: var(--accent); line-height: 1; }
+    .stat b { display: block; font-size: 14px; }
+    .stat span { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    /* ----------------------------- SERVICES ------------------------- */
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .card { background: var(--white); border: 1px solid var(--paper-2); border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 30px rgba(20,24,30,.04); }
+    .card-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,122,26,.12); color: var(--accent); display: grid; place-items: center; font-size: 22px; }
+    .card h3 { margin: 22px 0 10px; font-size: 20px; letter-spacing: -.025em; }
+    .card p { margin: 0; color: #626a74; font-size: 14px; line-height: 1.7; }
+    .card ul { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 8px; }
+    .card li { font-size: 13px; color: #4f565f; display: flex; gap: 8px; }
+    .card li::before { content: "→"; color: var(--accent); font-weight: 800; }
+
+    /* --------------------------- HOW IT WORKS ----------------------- */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; counter-reset: step; }
+    .step { position: relative; border-top: 1px solid rgba(255,255,255,.2); padding-top: 26px; }
+    .step::before { counter-increment: step; content: "0" counter(step); display: block; color: var(--accent); font-weight: 850; font-size: 14px; letter-spacing: .1em; margin-bottom: 22px; }
+    .step h3 { margin: 0 0 10px; font-size: 22px; letter-spacing: -.025em; }
+    .step p { margin: 0; color: #aab1bb; font-size: 14px; line-height: 1.7; }
+
+    /* ------------------------------ GALLERY ------------------------- */
+    .gallery-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+    .gallery-card { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--ink); text-decoration: none; display: block; min-height: 340px; }
+    .gallery-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .gallery-card:hover img { transform: scale(1.035); }
+    .gallery-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(9,11,14,.9)); }
+    .gallery-copy { position: absolute; z-index: 1; left: 26px; right: 26px; bottom: 24px; color: var(--white); }
+    .gallery-copy span { display: inline-block; font-size: 10px; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-soft); margin-bottom: 9px; }
+    .gallery-copy b { display: block; font-size: 20px; letter-spacing: -.02em; }
+    .gallery-copy small { display: block; color: #c2c8d0; margin-top: 6px; font-size: 12px; }
+    .ig-chip { position: absolute; z-index: 1; top: 20px; right: 20px; background: rgba(13,15,18,.8); color: var(--white); border-radius: 999px; padding: 8px 12px; font-size: 11px; font-weight: 750; }
+
+    /* -------------------------------- FAQ -------------------------- */
+    .faq-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; }
+    .faq-list { border-top: 1px solid #d8d4cd; }
+    details { border-bottom: 1px solid #d8d4cd; padding: 20px 0; }
+    summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 18px; font-size: 16px; font-weight: 750; letter-spacing: -.01em; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--accent); font-size: 24px; font-weight: 400; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { margin: 14px 0 0; color: #626a74; font-size: 14px; line-height: 1.7; max-width: 620px; }
+
+    /* ----------------------------- FOOTER --------------------------- */
+    .cta-band { background: var(--ink); color: var(--white); padding: clamp(60px, 8vw, 96px) 0; }
+    .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+    .cta-inner h2 { margin: 12px 0 10px; font-size: clamp(30px, 4vw, 46px); line-height: 1.05; letter-spacing: -.04em; }
+    .cta-inner p { margin: 0; color: #aeb5bf; font-size: 15px; line-height: 1.6; max-width: 520px; }
+    .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .site-footer { background: #090b0e; color: #9098a3; padding: 34px 0; font-size: 12px; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .footer-inner a { color: var(--white); text-decoration: none; font-weight: 700; }
+    .footer-inner a:hover { color: var(--accent); }
+    .footer-brand { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 800; font-size: 13px; }
+    .footer-brand img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+
+    /* --------------------------- RESPONSIVE ------------------------- */
+    @media (max-width: 1000px) {
+      .nav a:not(.nav-cta) { display: none; }
+      .cards, .steps { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .faq-layout { grid-template-columns: 1fr; gap: 26px; }
+      .hero-inner { gap: 30px; }
+      .hero-booking { max-width: 460px; }
+      .hero-form { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      :root { --compact-h: 118px; }
+      .booking-dock { display: block; }
+      .hero-booking { display: none; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .dock-inner { flex-wrap: wrap; align-content: center; gap: 7px 10px; padding-block: 8px; width: calc(100% - 24px); }
+      .dock-brand { flex: 1 1 auto; border: 0; padding: 0; }
+      .dock-brand img { width: 30px; height: 30px; }
+      .dock-brand small { display: none; }
+      .dock-more { padding: 6px 0; font-size: 12px; }
+      .dock-fields { order: 3; flex: 1 1 100%; gap: 8px; }
+      #bk-service { flex: 1 1 45%; }
+      #bk-zip { flex: 0 1 35%; }
+      .dock-fields .btn-accent { flex: 0 0 auto; padding-inline: 16px; }
+      .dock-field { height: 42px; font-size: 12px; padding-inline: 11px; }
+      .extra-inner { width: calc(100% - 24px); }
+      .field-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .dock-success { width: calc(100% - 24px); flex-wrap: wrap; padding-block: 10px; }
+      .success-actions { width: 100%; }
+      .success-actions > * { flex: 1; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: calc(100% - 36px); }
+      .header-inner { min-height: 64px; }
+      .nav .nav-cta { padding: 9px 12px; font-size: 12px; }
+      .logo b { font-size: 15px; }
+      .logo span { font-size: 10px; }
+      .stats-inner { grid-template-columns: 1fr; }
+      .stat + .stat { border-left: 0; border-top: 1px solid var(--paper-2); }
+      .field-grid { grid-template-columns: 1fr; }
+      .gallery-copy { left: 18px; right: 18px; bottom: 18px; }
+      .gallery-copy b { font-size: 17px; }
+      .cta-actions { width: 100%; }
+      .cta-actions a { flex: 1 1 100%; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .booking-card-head { padding: 15px 17px; }
+      .booking-card-body { padding: 17px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- ============================ FIXED BOOKING FORM ============================ -->
+  <div class="booking-dock" id="bookingDock" role="region" aria-label="Fixed booking form">
+    <div class="dock-inner">
+      <div class="dock-brand">
+        <img src="assets/profile.jpg" alt="Garage Floor HQ profile picture">
+        <div>
+          <b>Garage Floor HQ</b>
+          <small>Free estimate · always on top</small>
+        </div>
+      </div>
+
+      <form class="dock-fields" id="bookingForm" novalidate>
+        <label class="sr-only" for="bk-service" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Service needed</label>
+        <select class="dock-field" id="bk-service" name="service" required>
+          <option value="">What do you need?</option>
+          <option value="Epoxy flake system">Epoxy flake system</option>
+          <option value="Solid colour epoxy">Solid colour epoxy</option>
+          <option value="Metallic epoxy">Metallic epoxy</option>
+          <option value="Repair / recoat">Repair / recoat</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+
+        <label class="sr-only" for="bk-zip" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">ZIP or postcode</label>
+        <input class="dock-field" id="bk-zip" name="zip" type="text" placeholder="ZIP / Postcode" autocomplete="postal-code" required>
+
+        <button type="submit" class="btn-accent">Get my quote →</button>
+      </form>
+
+      <button type="button" class="dock-more" id="dockMore" aria-expanded="false" aria-controls="dockExtra">+ More details</button>
+    </div>
+
+    <!-- Extra fields stay attached to the fixed bar and scroll inside it on small screens -->
+    <div class="dock-extra" id="dockExtra">
+      <div class="extra-inner">
+        <div class="extra-top">
+          <div>
+            <h2>Tell us about your garage floor</h2>
+            <p>A few details help your contractor give you an accurate quote.</p>
+          </div>
+          <button type="button" class="extra-close" id="dockClose">Close ×</button>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="bk-name">Your name *</label>
+            <input id="bk-name" name="name" type="text" placeholder="Alex Morgan" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="bk-phone">Phone *</label>
+            <input id="bk-phone" name="phone" type="tel" placeholder="(555) 000-0000" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label for="bk-email">Email</label>
+            <input id="bk-email" name="email" type="email" placeholder="you@email.com" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="bk-size">Garage size</label>
+            <select id="bk-size" name="size">
+              <option value="">Select size</option>
+              <option>1 car garage</option>
+              <option>2 car garage</option>
+              <option>3 car garage</option>
+              <option>Workshop / commercial</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bk-date">Preferred timing</label>
+            <input id="bk-date" name="date" type="date">
+          </div>
+          <div class="field">
+            <label for="bk-condition">Floor condition</label>
+            <select id="bk-condition" name="condition">
+              <option value="">Select condition</option>
+              <option>Bare concrete / new slab</option>
+              <option>Old coating peeling</option>
+              <option>Stains or moisture marks</option>
+              <option>Cracks or damage</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bk-area">Approx. area (sq ft)</label>
+            <input id="bk-area" name="area" type="text" inputmode="numeric" placeholder="e.g. 400">
+          </div>
+          <div class="field">
+            <label for="bk-address">Street address</label>
+            <input id="bk-address" name="address" type="text" placeholder="Optional — for a closer quote" autocomplete="street-address">
+          </div>
+          <div class="field full">
+            <label for="bk-notes">Anything else we should know?</label>
+            <textarea id="bk-notes" name="notes" placeholder="Tell us about the floor, the look you want, or any questions you have..."></textarea>
+          </div>
+        </div>
+
+        <div class="extra-foot">
+          <p>Your request is saved on this device and prepared for Instagram. To confirm a booking, send the copied details to <strong>@garagefloorhq</strong>.</p>
+          <button type="submit" form="bookingForm" class="btn-accent">Send booking request →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation shown in the same fixed top bar -->
+    <div class="dock-success" id="dockSuccess" role="status" aria-live="polite">
+      <div class="success-icon">✓</div>
+      <div class="success-copy">
+        <b>Request ready — thanks!</b>
+        <span id="successSummary">Your details are copied and ready to send.</span>
+      </div>
+      <div class="success-actions">
+        <button type="button" id="copyRequest">Copy details</button>
+        <a class="primary" id="dmLink" href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener">Message on Instagram</a>
+        <button type="button" id="editRequest">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================= HEADER ================================= -->
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="#top" aria-label="Garage Floor HQ home">
+        <img src="assets/profile.jpg" alt="">
+        <span><b>Garage Floor HQ</b><span>@garagefloorhq</span></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#services">Services</a>
+        <a href="#process">How it works</a>
+        <a href="#gallery">Recent work</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="#book" data-open-booking>Book a free estimate</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================================== HERO ================================= -->
+    <section class="hero" id="top">
+      <div class="wrap hero-inner">
+        <div>
+          <span class="eyebrow">Garage Floor HQ · @garagefloorhq</span>
+          <h1>Your garage floor, <em>done right.</em></h1>
+          <p class="hero-lead">We connect homeowners with pre-vetted garage floor contractors — so you get a durable, great-looking finish without the guesswork.</p>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#book" data-open-booking>Book a free estimate <span aria-hidden="true">→</span></a>
+            <a class="btn-outline" href="#gallery">See recent work</a>
+          </div>
+          <div class="hero-trust">
+            <span>Pre-vetted contractors</span>
+            <span>Free, no-obligation quote</span>
+            <span>Fast, easy booking</span>
+          </div>
+        </div>
+        <div class="hero-booking" id="heroBooking">
+          <div class="booking-card">
+            <div class="booking-card-head">
+              <img class="booking-card-logo" src="assets/profile.jpg" alt="Garage Floor HQ logo">
+              <div class="booking-card-head-text">
+                <b>Garage Floor HQ</b>
+                <small>@garagefloorhq · free estimates</small>
+              </div>
+              <span class="booking-card-badge">Fast quote</span>
+            </div>
+
+            <div class="booking-card-body">
+              <h2>Book your free estimate</h2>
+              <p>Tell us a little about your floor. We'll get the details to a vetted contractor.</p>
+              <form class="hero-form" id="heroForm" novalidate>
+                <div class="field">
+                  <label for="h-service">Service needed *</label>
+                  <select id="h-service" name="service" required>
+                    <option value="">What do you need?</option>
+                    <option value="Epoxy flake system">Epoxy flake system</option>
+                    <option value="Solid colour epoxy">Solid colour epoxy</option>
+                    <option value="Metallic epoxy">Metallic epoxy</option>
+                    <option value="Repair / recoat">Repair / recoat</option>
+                    <option value="Not sure yet">Not sure yet</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="h-zip">ZIP / Postcode *</label>
+                  <input id="h-zip" name="zip" type="text" placeholder="e.g. 12345" autocomplete="postal-code" required>
+                </div>
+                <div class="field">
+                  <label for="h-name">Your name *</label>
+                  <input id="h-name" name="name" type="text" placeholder="Alex Morgan" autocomplete="name" required>
+                </div>
+                <div class="field">
+                  <label for="h-phone">Phone *</label>
+                  <input id="h-phone" name="phone" type="tel" placeholder="(555) 000-0000" autocomplete="tel" required>
+                </div>
+                <div class="field">
+                  <label for="h-size">Garage size</label>
+                  <select id="h-size" name="size">
+                    <option value="">Select size</option>
+                    <option>1 car garage</option>
+                    <option>2 car garage</option>
+                    <option>3 car garage</option>
+                    <option>Workshop / commercial</option>
+                    <option>Not sure</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="h-date">Preferred timing</label>
+                  <input id="h-date" name="date" type="date">
+                </div>
+                <div class="field full">
+                  <label for="h-notes">Anything else?</label>
+                  <textarea id="h-notes" name="notes" placeholder="Floor condition, the look you want, or any questions..."></textarea>
+                </div>
+                <button type="submit" class="btn-accent">Get my free quote →</button>
+                <p class="hero-form-note">No obligation. Your details are prepared for Instagram — we'll show you what to send.</p>
+              </form>
+            </div>
+
+            <div class="hero-success-card" id="heroSuccess" role="status" aria-live="polite">
+              <div class="success-icon">✓</div>
+              <h3>Request ready — thanks!</h3>
+              <p id="heroSuccessSummary">Your details are copied and ready to send to @garagefloorhq.</p>
+              <div class="hero-success-actions">
+                <a class="primary" id="heroDm" href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener">Message on Instagram ↗</a>
+                <button type="button" id="heroCopy">Copy details</button>
+                <button type="button" id="heroEdit">Edit request</button>
+              </div>
+            </div>
+
+            <div class="booking-card-foot">
+              <span>See the work on Instagram</span>
+              <a href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener">
+                <img src="assets/profile.jpg" alt=""> @garagefloorhq ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== QUICK FACTS =============================== -->
+    <section class="stats" aria-label="Why homeowners choose Garage Floor HQ">
+      <div class="wrap stats-inner">
+        <div class="stat"><span class="stat-num">01</span><div><b>Vetted pros, not guesswork</b><span>Every referral is pre-screened</span></div></div>
+        <div class="stat"><span class="stat-num">02</span><div><b>Book from anywhere</b><span>Fixed on top on every phone</span></div></div>
+        <div class="stat"><span class="stat-num">03</span><div><b>Real work, real photos</b><span>Straight from our Instagram</span></div></div>
+      </div>
+    </section>
+
+    <!-- ================================ SERVICES ================================ -->
+    <section class="section" id="services">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">What we do</span>
+          <h2>A finish for every kind of garage.</h2>
+          <p>Tell us what your floor looks like today and the look you're after. We'll connect you with a contractor who fits the job.</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">✦</div>
+            <h3>Epoxy flake systems</h3>
+            <p>The classic garage upgrade: a tough coating with decorative flakes for grip and a clean, textured look.</p>
+            <ul><li>Great for daily-use garages</li><li>Easy to sweep and mop</li><li>Wide range of colour blends</li></ul>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">◈</div>
+            <h3>Solid colour &amp; metallic</h3>
+            <p>A seamless, high-gloss surface that brightens the whole space — popular for workshops, man caves and showrooms.</p>
+            <ul><li>Seamless, smooth finish</li><li>Reflects more light</li><li>Made to order for your space</li></ul>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">↻</div>
+            <h3>Prep, repair &amp; recoat</h3>
+            <p>Stains, moisture marks or a coating that's already peeling? The slab needs the right prep before anything goes over it.</p>
+            <ul><li>Honest assessment first</li><li>Surface prep matters</li><li>Right system for the condition</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= HOW IT WORKS =============================== -->
+    <section class="section dark" id="process">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">How it works</span>
+          <h2>Three steps to a better floor.</h2>
+          <p>No endless phone tag. The booking form is right here on desktop and pinned to the top on phones.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><h3>Tell us about your floor</h3><p>Use the pinned form above — pick a service, add your ZIP and drop a few details. It takes under a minute.</p></div>
+          <div class="step"><h3>Get a vetted contractor</h3><p>We connect homeowners with pre-vetted garage floor contractors who can take a proper look at your slab.</p></div>
+          <div class="step"><h3>Confirm your install</h3><p>Agree the scope and timing, then get your garage back looking better than ever.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== GALLERY ================================== -->
+    <section class="section" id="gallery">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Recent work</span>
+          <h2>Straight from the Garage Floor HQ feed.</h2>
+          <p>These are the real images posted on <a href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;">@garagefloorhq</a>. Tap a photo to see the original post.</p>
+        </div>
+        <div class="gallery-grid">
+          <a class="gallery-card" href="https://www.instagram.com/garagefloorhq/p/DZRM08Up4ti/" target="_blank" rel="noopener">
+            <img src="assets/post-1.jpg" alt="Garage floor job site photo posted by Garage Floor HQ" width="1024" height="571" loading="lazy">
+            <span class="ig-chip">View on Instagram ↗</span>
+            <div class="gallery-copy"><span>From the feed · June 6, 2026</span><b>Slab check before coating</b><small>Moisture and surface condition come first.</small></div>
+          </a>
+          <a class="gallery-card" href="https://www.instagram.com/garagefloorhq/p/DZRMLkom81L/" target="_blank" rel="noopener">
+            <img src="assets/post-2.jpg" alt="Finished garage floor photo posted by Garage Floor HQ" width="1080" height="1080" loading="lazy">
+            <span class="ig-chip">View on Instagram ↗</span>
+            <div class="gallery-copy"><span>From the feed · June 6, 2026</span><b>Fresh finish</b><small>See the full post on Instagram.</small></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= FAQ =================================== -->
+    <section class="section" style="background:var(--white);" id="faq">
+      <div class="wrap faq-layout">
+        <div class="section-head" style="margin-bottom:0;">
+          <span class="eyebrow">Good to know</span>
+          <h2>Frequently asked questions.</h2>
+          <p>Still stuck? Add it to the notes in the booking form.</p>
+        </div>
+        <div class="faq-list">
+          <details open><summary>How much does a garage floor coating cost?</summary><p>It depends on the size of the slab, its condition and the system you choose. Send the form with your approximate area and we'll use those details to put together a tailored quote.</p></details>
+          <details><summary>Do I need to be home for the estimate?</summary><p>Usually yes, so the contractor can see the floor in person and check for moisture or damage. They'll confirm the details with you when they get in touch.</p></details>
+          <details><summary>Can you coat over an existing epoxy floor?</summary><p>Sometimes — it depends on how well the old coating is bonded and the condition of the concrete underneath. Mention any peeling or stains in the notes field.</p></details>
+          <details><summary>Where can I see more of your work?</summary><p>Follow <a href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;">@garagefloorhq</a> on Instagram. The gallery above links directly to the posts we've shared.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== CTA BAND ================================= -->
+    <section class="cta-band" id="book">
+      <div class="wrap cta-inner">
+        <div>
+          <span class="eyebrow">Ready when you are</span>
+          <h2>Let's get your garage sorted.</h2>
+          <p>The form is right here on desktop and pinned to the top on phones. Start it now, finish it whenever you're ready.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn-primary" href="#book" data-open-booking>Open booking form →</a>
+          <a class="btn-outline" href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener">Instagram ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================================= FOOTER ================================== -->
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand"><img src="assets/profile.jpg" alt=""> Garage Floor HQ</div>
+      <div>Connecting homeowners with pre-vetted garage floor contractors.</div>
+      <div><a href="https://www.instagram.com/garagefloorhq/" target="_blank" rel="noopener">@garagefloorhq</a> · © 2026 Garage Floor HQ</div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const dock        = document.getElementById('bookingDock');
+      const dockForm    = document.getElementById('bookingForm');
+      const heroWrap    = document.getElementById('heroBooking');
+      const heroForm    = document.getElementById('heroForm');
+      const moreBtn     = document.getElementById('dockMore');
+      const closeBtn    = document.getElementById('dockClose');
+      const summary     = document.getElementById('successSummary');
+      const copyBtn     = document.getElementById('copyRequest');
+      const editBtn     = document.getElementById('editRequest');
+      const dmLink      = document.getElementById('dmLink');
+      const heroSummary = document.getElementById('heroSuccessSummary');
+      const heroCopy    = document.getElementById('heroCopy');
+      const heroEdit    = document.getElementById('heroEdit');
+      const heroDm      = document.getElementById('heroDm');
+
+      let lastRequest = '';
+      const isMobile = function () { return window.matchMedia('(max-width: 900px)').matches; };
+
+      function openDetails(focusId) {
+        dock.classList.add('expanded');
+        moreBtn.setAttribute('aria-expanded', 'true');
+        moreBtn.textContent = '− Less details';
+        if (focusId) {
+          const el = document.getElementById(focusId);
+          if (el) window.setTimeout(function () { el.focus({ preventScroll: true }); }, 30);
+        }
+      }
+      function closeDetails() {
+        dock.classList.remove('expanded');
+        moreBtn.setAttribute('aria-expanded', 'false');
+        moreBtn.textContent = '+ More details';
+      }
+
+      moreBtn.addEventListener('click', function () {
+        if (dock.classList.contains('expanded')) closeDetails(); else openDetails();
+      });
+      closeBtn.addEventListener('click', closeDetails);
+
+      document.querySelectorAll('[data-open-booking]').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          if (isMobile()) {
+            dock.classList.remove('success');
+            openDetails('bk-service');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            heroWrap.classList.remove('done');
+            const field = document.getElementById('h-service');
+            if (field) {
+              field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              field.focus({ preventScroll: true });
+            }
+          }
+        });
+      });
+
+      function valueOf(id) {
+        const el = document.getElementById(id);
+        return el && el.value ? el.value.trim() : '';
+      }
+
+      function collect(prefix, fromDock) {
+        const get = function (suffix) { return valueOf(prefix + '-' + suffix); };
+        return {
+          service:   get('service'),
+          zip:       get('zip'),
+          name:      get('name'),
+          phone:     get('phone'),
+          email:     fromDock ? get('email') : '',
+          size:      get('size'),
+          date:      get('date'),
+          condition: fromDock ? get('condition') : '',
+          area:      fromDock ? get('area') : '',
+          address:   fromDock ? get('address') : '',
+          notes:     get('notes')
+        };
+      }
+
+      function buildMessage(data) {
+        return [
+          'Hi Garage Floor HQ — I would like a free estimate.',
+          '',
+          'Service: ' + (data.service || 'Not sure yet'),
+          'ZIP / Postcode: ' + data.zip,
+          'Name: ' + data.name,
+          'Phone: ' + data.phone,
+          'Email: ' + (data.email || 'Not provided'),
+          'Garage size: ' + (data.size || 'Not provided'),
+          'Approx. area: ' + (data.area ? data.area + ' sq ft' : 'Not provided'),
+          'Preferred timing: ' + (data.date || 'Flexible'),
+          'Floor condition: ' + (data.condition || 'Not provided'),
+          'Street address: ' + (data.address || 'Not provided'),
+          'Notes: ' + (data.notes || 'None')
+        ].join('\n');
+      }
+
+      function legacyCopy(text) {
+        return new Promise(function (resolve) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          resolve();
+        });
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text).catch(function () { return legacyCopy(text); });
+        }
+        return legacyCopy(text);
+      }
+
+      function bindCopyButton(button) {
+        if (!button) return;
+        button.addEventListener('click', function () {
+          copyText(lastRequest);
+          const original = button.textContent;
+          button.textContent = 'Copied ✓';
+          window.setTimeout(function () { button.textContent = original; }, 1800);
+        });
+      }
+
+      function validate(data, prefix, fromDock) {
+        const required = ['service', 'zip', 'name', 'phone'];
+        for (let i = 0; i < required.length; i++) {
+          if (!data[required[i]]) {
+            const id = prefix + '-' + required[i];
+            if (fromDock) {
+              openDetails(id);
+            } else {
+              const field = document.getElementById(id);
+              if (field) field.reportValidity();
+            }
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function handleSubmit(event, fromDock) {
+        event.preventDefault();
+        const prefix = fromDock ? 'bk' : 'h';
+        const data = collect(prefix, fromDock);
+        if (!validate(data, prefix, fromDock)) return;
+
+        lastRequest = buildMessage(data);
+        const dmUrl = 'https://www.instagram.com/direct/new/?text=' + encodeURIComponent(lastRequest);
+        const short = data.service + ' · ' + data.zip + ' · ' + data.name;
+
+        try {
+          const saved = JSON.parse(localStorage.getItem('garageFloorHQRequests') || '[]');
+          saved.push({ at: new Date().toISOString(), details: data });
+          localStorage.setItem('garageFloorHQRequests', JSON.stringify(saved.slice(-20)));
+        } catch (e) {}
+
+        copyText(lastRequest);
+
+        if (fromDock) {
+          summary.textContent = short;
+          dmLink.href = dmUrl;
+          closeDetails();
+          dock.classList.add('success');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          heroSummary.textContent = short + '. Copied and ready to send.';
+          heroDm.href = dmUrl;
+          heroWrap.classList.add('done');
+        }
+      }
+
+      dockForm.addEventListener('submit', function (e) { handleSubmit(e, true); });
+      heroForm.addEventListener('submit', function (e) { handleSubmit(e, false); });
+
+      bindCopyButton(copyBtn);
+      bindCopyButton(heroCopy);
+
+      editBtn.addEventListener('click', function () {
+        dock.classList.remove('success');
+        openDetails('bk-notes');
+      });
+      heroEdit.addEventListener('click', function () {
+        heroWrap.classList.remove('done');
+        const field = document.getElementById('h-notes');
+        if (field) field.focus({ preventScroll: false });
+      });
+    })();
+  </script>
+</body>
+</html>
